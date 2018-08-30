@@ -118,3 +118,24 @@ for i in range(256):
     odic[code[:16]]=i
 second_char=chr(odic[oracle_code[:16]])
 print(first_char,second_char)
+
+le=len(encryption_oracle(""))
+lle=le
+l=0
+while le==lle:
+    l+=1
+    lle=len(encryption_oracle("A"*l))
+code_len=le-l+1
+print("Code-Length:",code_len)
+
+plain_text=""
+for i in range(code_len):
+    print(i)
+    oracle_code=encryption_oracle("A"*((15-i)%16))
+    odic={}
+    block_num=i//16
+    for c in range(256):
+        code=encryption_oracle("A"*((15-i)%16)+plain_text+chr(c))
+        odic[code[block_num*16:(block_num+1)*16]]=c
+    plain_text+=chr(odic[oracle_code[block_num*16:(block_num+1)*16]])
+print(plain_text)
