@@ -99,11 +99,10 @@ def encryption_oracle(text):
     plain=text+hex2str(b64_hex(append_b64))
     padd_len=15-(len(plain)+15)%16
     hex_plain=str2hex(plain+chr(padd_len)*padd_len)
-
-
     code=ebc_encode(decipher,hex_plain)
     return hex2str(code)
 
+#first char
 oracle_code=encryption_oracle("A"*15)
 odic={}
 for i in range(256):
@@ -111,6 +110,8 @@ for i in range(256):
     odic[code[:16]]=i
 first_char=chr(odic[oracle_code[:16]])
 
+
+#second char
 oracle_code=encryption_oracle("A"*14)
 odic={}
 for i in range(256):
@@ -125,17 +126,25 @@ l=0
 while le==lle:
     l+=1
     lle=len(encryption_oracle("A"*l))
+
+block_len=lle-le
+print("Block-Length:",block_len)
 code_len=le-l+1
 print("Code-Length:",code_len)
+assert(block_len==16)
 
+ebc_check=encryption_oracle('A'*block_len*2)
+assert(ebc_check[0:block_len]==ebc_check[block_len:block_len*2])
+
+#whole message
 plain_text=""
 for i in range(code_len):
     print(i)
-    oracle_code=encryption_oracle("A"*((15-i)%16))
+    oracle_code=encryption_oracle("A"*((block_len-1-i)%block_len))
     odic={}
-    block_num=i//16
+    block_num=i//block_len
     for c in range(256):
-        code=encryption_oracle("A"*((15-i)%16)+plain_text+chr(c))
+        code=encryption_oracle("A"*((block_len-1-i)%block_len)+plain_text+chr(c))
         odic[code[block_num*16:(block_num+1)*16]]=c
     plain_text+=chr(odic[oracle_code[block_num*16:(block_num+1)*16]])
 print(plain_text)
