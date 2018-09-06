@@ -139,7 +139,6 @@ assert(ebc_check[0:block_len]==ebc_check[block_len:block_len*2])
 #whole message
 plain_text=""
 for i in range(code_len):
-    print(i)
     oracle_code=encryption_oracle("A"*((block_len-1-i)%block_len))
     odic={}
     block_num=i//block_len
@@ -147,4 +146,5 @@ for i in range(code_len):
         code=encryption_oracle("A"*((block_len-1-i)%block_len)+plain_text+chr(c))
         odic[code[block_num*16:(block_num+1)*16]]=c
     plain_text+=chr(odic[oracle_code[block_num*16:(block_num+1)*16]])
+    print(i,plain_text[-1])
 print(plain_text)
